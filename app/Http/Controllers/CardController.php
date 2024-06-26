@@ -16,12 +16,64 @@ class CardController extends Controller
         }
 
         $column = Column::find($columnId);
-        $lastCard = $column->cards()->get()->sortBy("order")->last();
+        $lastCard = $column->cards()->orderBy("order", "asc")->get()->last();
         $order = $lastCard ? $lastCard->order + 1 : 0;
         $column->cards()->create([
             "text" => $request->text,
             "order" => $order,
         ]);
+
+        return redirect()->route("board.show", $boardId);
+    }
+
+    public function swap(int $boardId, int $columnId, int $cardId, int $targetCardId, Request $request)
+    {
+        $user = $request->user();
+
+        $board = Board::find($boardId);
+        if (!$board) {
+            return redirect()->route("dashboard");
+        }
+        if ($board->user_id !== $user->id) {
+            // TODO: if board is not owned by user AND isnt shared with edit permissions
+            return redirect()->route("dashboard");
+        }
+
+        $column = Column::find($columnId);
+        if (!$column) {
+            return redirect()->route("board.show", $boardId);
+        }
+        if ($column->board_id !== $board->id) {
+            return redirect()->route("dashboard");
+        }
+
+        $card = Card::find($cardId);
+        if (!$card) {
+            return redirect()->route("board.show", $boardId);
+        }
+        if ($card->column_id !== $column->id) {
+            return redirect()->route("dashboard");
+        }
+
+        $targetCard = Card::find($targetCardId);
+        if (!$targetCard) {
+            return redirect()->route("board.show", $boardId);
+        }
+        // lai kārts ar kuru apmainīs vietas arī pieder tam pašam dēlim
+        $targetColumn = Column::find($targetCard->column_id);
+        if (!$targetColumn) {
+            return redirect()->route("board.show", $boardId);
+        }
+        if ($targetColumn->board_id !== $board->id) {
+            return redirect()->route("dashboard");
+        }
+
+        $currentOrder = $card->order;
+        $card->order = $targetCard->order;
+        $targetCard->order = $currentOrder;
+
+        $card->save();
+        $targetCard->save();
 
         return redirect()->route("board.show", $boardId);
     }

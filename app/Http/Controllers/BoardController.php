@@ -22,7 +22,7 @@ class BoardController extends Controller
     public function show(int $id)
     {
         $board = Board::find($id);
-        $columns = $board->columns()->get()->sortBy("order");
+        $columns = $board->columns()->orderBy("order", "asc")->get();
 
         return view("board.show", compact("board", "columns"));
     }
