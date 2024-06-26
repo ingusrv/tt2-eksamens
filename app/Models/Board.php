@@ -20,4 +20,9 @@ class Board extends Model
     {
         return $this->hasMany(Column::class);
     }
+
+    public function sharedUsers()
+    {
+        return $this->belongsToMany(User::class, "shared_boards")->withPivot("permissions")->withTimestamps();
+    }
 }

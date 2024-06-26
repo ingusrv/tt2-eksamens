@@ -11,20 +11,36 @@ class BoardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $boards = Board::where("user_id", $user->id)->get();
-        //$boards = Board::all();
+        $boards = $user->boards()->get();
+        $sharedBoards = $user->sharedBoards()->get();
 
-        // TODO: shared boards
-
-        return view("board.index", compact("boards", "user"));
+        return view("board.index", compact("boards", "user", "sharedBoards"));
     }
 
-    public function show(int $id)
+    public function show(int $id, Request $request)
     {
+        $user = $request->user();
         $board = Board::find($id);
+        if (!$board) {
+            return redirect()->route("dashboard");
+        }
+
+        $sharedUser = $board->sharedUsers()->find($user->id);
+        $canEdit = false;
+
+        if ($board->user_id !== $user->id) {
+            if (!$sharedUser) {
+                return redirect()->route("dashboard");
+            } else {
+                $canEdit = $sharedUser->pivot->permissions === 1;
+            }
+        } else {
+            $canEdit = true;
+        }
+
         $columns = $board->columns()->orderBy("order", "asc")->get();
 
-        return view("board.show", compact("board", "columns"));
+        return view("board.show", compact("board", "columns", "canEdit"));
     }
 
     public function store(Request $request)
@@ -41,17 +57,27 @@ class BoardController extends Controller
         return redirect()->route("dashboard");
     }
 
-    public function edit(int $id)
+    public function edit(int $id, Request $request)
     {
+        $user = $request->user();
         $board = Board::find($id);
+        if (!$board) {
+            return redirect()->route("dashboard");
+        }
+
+        if ($board->user_id !== $user->id) {
+            return redirect()->route("dashboard");
+        }
+
         $users = User::all();
         $privacyOptions = [
             ["value" => 0, "name" => "Private"],
             ["value" => 1, "name" => "Unlisted"],
             ["value" => 2, "name" => "Public"],
         ];
+        $sharedUsers = $board->sharedUsers()->get();
 
-        return view("board.edit", compact("board", "users", "privacyOptions"));
+        return view("board.edit", compact("board", "users", "privacyOptions", "sharedUsers"));
     }
 
     public function update(int $id, Request $request)

@@ -4,6 +4,7 @@ use App\Http\Controllers\BoardController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SharedBoardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,6 +24,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/board/{id}/edit', [BoardController::class, 'edit'])->name("board.edit");
     Route::patch('/board/{id}/edit', [BoardController::class, 'update'])->name("board.update");
+
+    Route::post('/board/{id}/share', [SharedBoardController::class, 'store'])->name("sharedboard.store");
+    Route::delete('/board/{id}/share/{userId}', [SharedBoardController::class, 'destroy'])->name("sharedboard.destroy");
 
     Route::post('/board/{id}/column', [ColumnController::class, 'store'])->name("column.store");
     Route::delete('/board/{id}/column/{columnId}', [ColumnController::class, 'destroy'])->name("column.destroy");

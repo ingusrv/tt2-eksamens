@@ -8,13 +8,27 @@ use Illuminate\Http\Request;
 
 class ColumnController extends Controller
 {
-    public function store(int $BoardId, Request $request)
+    public function store(int $boardId, Request $request)
     {
         if (!$request->name) {
-            return redirect()->route("board.show", $BoardId);
+            return redirect()->route("board.show", $boardId);
         }
 
-        $board = Board::find($BoardId);
+        $user = $request->user();
+        $board = Board::find($boardId);
+        if (!$board) {
+            return redirect()->route("dashboard");
+        }
+        if ($board->user_id !== $user->id) {
+            $sharedUser = $board->sharedUsers()->find($user->id);
+            if (!$sharedUser) {
+                return redirect()->route("board.show", $boardId);
+            }
+            if ($sharedUser->pivot->permissions === 0) {
+                return redirect()->route("board.show", $boardId);
+            }
+        }
+
         $lastColumn = $board->columns()->orderBy("order", "asc")->get()->last();
         $order = $lastColumn ? $lastColumn->order + 1 : 0;
         $board->columns()->create([
@@ -22,7 +36,7 @@ class ColumnController extends Controller
             "order" => $order,
         ]);
 
-        return redirect()->route("board.show", $BoardId);
+        return redirect()->route("board.show", $boardId);
     }
 
     public function swap(int $boardId, int $columnId, int $targetColumnId, Request $request)
@@ -34,8 +48,13 @@ class ColumnController extends Controller
             return redirect()->route("dashboard");
         }
         if ($board->user_id !== $user->id) {
-            // TODO: if board is not owned by user AND isnt shared with edit permissions
-            return redirect()->route("dashboard");
+            $sharedUser = $board->sharedUsers()->find($user->id);
+            if (!$sharedUser) {
+                return redirect()->route("board.show", $boardId);
+            }
+            if ($sharedUser->pivot->permissions === 0) {
+                return redirect()->route("board.show", $boardId);
+            }
         }
 
         $column = Column::find($columnId);
@@ -73,8 +92,13 @@ class ColumnController extends Controller
             return redirect()->route("dashboard");
         }
         if ($board->user_id !== $user->id) {
-            // TODO: if board is not owned by user AND isnt shared with edit permissions
-            return redirect()->route("dashboard");
+            $sharedUser = $board->sharedUsers()->find($user->id);
+            if (!$sharedUser) {
+                return redirect()->route("board.show", $boardId);
+            }
+            if ($sharedUser->pivot->permissions === 0) {
+                return redirect()->route("board.show", $boardId);
+            }
         }
 
         $column = Column::find($columnId);

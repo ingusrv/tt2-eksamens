@@ -1,7 +1,9 @@
 <x-app-layout>
 <div class="p-12">
     <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{{ $board->name }}</h1>
+    <div class="dark:text-gray-100">{{$canEdit === true ? "Rediģētājs" : "Skatītājs"}}</div>
 
+    @if ($canEdit)
     <h2 class="font-bold dark:text-gray-100">Pievienot jaunu kolonnu</h2>
     <form method="POST" action="{{route("column.store", $board->id)}}">
         @csrf
@@ -11,6 +13,7 @@
 
         <button type="submit" class="dark:bg-gray-300 dark:text-black px-2 py-1">Pievienot</button>
     </form>
+    @endif
 
     <div class="flex flex-row mt-6 gap-x-4 overflow-x-scroll">
         @php
@@ -29,6 +32,7 @@
                 <div class="dark:text-gray-100">previous: {{$prevColumn}}</div>
                 <div class="dark:text-gray-100">next: {{$nextColumn}}</div>
 
+                @if ($canEdit)
                 @if ($prevColumn != null)
                     <form method="POST" action="{{route("column.swap", [$board->id, $column->id, $prevColumn])}}">
                         @csrf
@@ -49,7 +53,9 @@
                         </div>
                     </form>
                 @endif
+                @endif
 
+                @if ($canEdit)
                 <form method="POST" action="{{route("column.destroy", [$board->id, $column->id])}}">
                     @csrf
                     @method("DELETE")
@@ -69,6 +75,7 @@
                         <button type="submit" class="dark:bg-gray-300 dark:text-black px-2 py-1 w-full">Pievienot</button>
                     </div>
                 </form>
+                @endif
 
                 <h3 class="dark:text-gray-100">Cards:</h3>
 
@@ -89,6 +96,7 @@
                             <div class="dark:text-gray-100">previous: {{$prevCard}}</div>
                             <div class="dark:text-gray-100">next: {{$nextCard}}</div>
 
+                            @if ($canEdit)
                             @if ($prevCard != null)
                                 <form method="POST" action="{{route("card.swap", [$board->id, $column->id, $card->id, $prevCard])}}">
                                     @csrf
@@ -117,6 +125,7 @@
                                     <button type="submit" class="dark:bg-gray-300 dark:text-black px-2 py-1 w-full">Dzēst</button>
                                 </div>
                             </form>
+                            @endif
                         </div>
                     @endfor
                 </div>

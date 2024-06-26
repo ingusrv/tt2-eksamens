@@ -15,7 +15,29 @@ class CardController extends Controller
             return redirect()->route("board.show", $boardId);
         }
 
+        $user = $request->user();
+        $board = Board::find($boardId);
+        if (!$board) {
+            return redirect()->route("dashboard");
+        }
+        if ($board->user_id !== $user->id) {
+            $sharedUser = $board->sharedUsers()->find($user->id);
+            if (!$sharedUser) {
+                return redirect()->route("board.show", $boardId);
+            }
+            if ($sharedUser->pivot->permissions === 0) {
+                return redirect()->route("board.show", $boardId);
+            }
+        }
+
         $column = Column::find($columnId);
+        if (!$column) {
+            return redirect()->route("board.show", $boardId);
+        }
+        if ($column->board_id !== $board->id) {
+            return redirect()->route("dashboard");
+        }
+
         $lastCard = $column->cards()->orderBy("order", "asc")->get()->last();
         $order = $lastCard ? $lastCard->order + 1 : 0;
         $column->cards()->create([
@@ -35,8 +57,13 @@ class CardController extends Controller
             return redirect()->route("dashboard");
         }
         if ($board->user_id !== $user->id) {
-            // TODO: if board is not owned by user AND isnt shared with edit permissions
-            return redirect()->route("dashboard");
+            $sharedUser = $board->sharedUsers()->find($user->id);
+            if (!$sharedUser) {
+                return redirect()->route("board.show", $boardId);
+            }
+            if ($sharedUser->pivot->permissions === 0) {
+                return redirect()->route("board.show", $boardId);
+            }
         }
 
         $column = Column::find($columnId);
@@ -59,7 +86,7 @@ class CardController extends Controller
         if (!$targetCard) {
             return redirect()->route("board.show", $boardId);
         }
-        // lai kārts ar kuru apmainīs vietas arī pieder tam pašam dēlim
+        // lai kolonna ar kuru apmainīs vietas arī pieder tam pašam dēlim
         $targetColumn = Column::find($targetCard->column_id);
         if (!$targetColumn) {
             return redirect()->route("board.show", $boardId);
@@ -87,8 +114,13 @@ class CardController extends Controller
             return redirect()->route("dashboard");
         }
         if ($board->user_id !== $user->id) {
-            // TODO: if board is not owned by user AND isnt shared with edit permissions
-            return redirect()->route("dashboard");
+            $sharedUser = $board->sharedUsers()->find($user->id);
+            if (!$sharedUser) {
+                return redirect()->route("board.show", $boardId);
+            }
+            if ($sharedUser->pivot->permissions === 0) {
+                return redirect()->route("board.show", $boardId);
+            }
         }
 
         $column = Column::find($columnId);
