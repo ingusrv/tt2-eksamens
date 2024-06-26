@@ -14,6 +14,13 @@ class BoardController extends Controller
         $boards = $user->boards()->get();
         $sharedBoards = $user->sharedBoards()->get();
 
+        if ($user->role === 1) {
+            $allBoards = Board::all();
+            $allUsers = User::all();
+
+            return view("board.index", compact("boards", "user", "sharedBoards", "allBoards", "allUsers"));
+        }
+
         return view("board.index", compact("boards", "user", "sharedBoards"));
     }
 

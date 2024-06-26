@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ColumnController;
@@ -17,6 +18,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/admin/board/{id}', [AdminController::class, 'showBoard'])->name("adminBoard.show");
+    Route::delete('/admin/user/{id}', [AdminController::class, 'destroyUser'])->name('adminUser.destroy');
 
     Route::post('/board', [BoardController::class, 'store'])->name("board.store");
     Route::get('/board/{id}', [BoardController::class, 'show'])->name("board.show");
