@@ -50,6 +50,12 @@ class DatabaseSeeder extends Seeder
             ["text" => fake()->sentence(), "order" => 3],
         ]);
 
+        Column::create([
+            "name" => "second empty column",
+            "board_id" => $firstBoard->id,
+            "order" => 1
+        ]);
+
         User::factory()->create(
             [
                 "name" => "administrators",
