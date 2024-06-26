@@ -45,7 +45,58 @@ class BoardController extends Controller
     {
         $board = Board::find($id);
         $users = User::all();
+        $privacyOptions = [
+            ["value" => 0, "name" => "Private"],
+            ["value" => 1, "name" => "Unlisted"],
+            ["value" => 2, "name" => "Public"],
+        ];
 
-        return view("board.edit", compact("board", "users"));
+        return view("board.edit", compact("board", "users", "privacyOptions"));
+    }
+
+    public function update(int $id, Request $request)
+    {
+        $user = $request->user();
+        $board = Board::find($id);
+
+        if (!$board) {
+            return redirect()->route("dashboard");
+        }
+
+        if ($board->user_id !== $user->id) {
+            return redirect()->route("dashboard");
+        }
+
+        if ($request->name == null || $request->privacy == null) {
+            return redirect()->route("board.edit", $id);
+        }
+
+        $board->name = $request->name;
+        $board->privacy = $request->privacy >= 0 && $request->privacy <= 2 ? $request->privacy : 0;
+        $board->save();
+
+        return redirect()->route("board.edit", $id)->with("status", "board-data-updated");
+    }
+
+    public function destroy(int $id, Request $request)
+    {
+        $request->validateWithBag('boardDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+        $board = Board::find($id);
+
+        if (!$board) {
+            return redirect()->route("dashboard");
+        }
+
+        if ($board->user_id !== $user->id) {
+            return redirect()->route("dashboard");
+        }
+
+        $board->delete();
+
+        return redirect()->route("dashboard");
     }
 }

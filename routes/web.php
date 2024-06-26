@@ -19,7 +19,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/board', [BoardController::class, 'store'])->name("board.store");
     Route::get('/board/{id}', [BoardController::class, 'show'])->name("board.show");
+    Route::delete('/board/{id}', [BoardController::class, 'destroy'])->name("board.destroy");
+
     Route::get('/board/{id}/edit', [BoardController::class, 'edit'])->name("board.edit");
+    Route::patch('/board/{id}/edit', [BoardController::class, 'update'])->name("board.update");
+
     Route::post('/board/{id}/column', [ColumnController::class, 'store'])->name("column.store");
     Route::post('/board/{id}/column/{cid}', [CardController::class, 'store'])->name("card.store");
 });
