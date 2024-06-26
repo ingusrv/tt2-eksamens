@@ -25,7 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/board/{id}/edit', [BoardController::class, 'update'])->name("board.update");
 
     Route::post('/board/{id}/column', [ColumnController::class, 'store'])->name("column.store");
-    Route::post('/board/{id}/column/{cid}', [CardController::class, 'store'])->name("card.store");
+    Route::delete('/board/{id}/column/{columnId}', [ColumnController::class, 'destroy'])->name("column.destroy");
+
+    Route::post('/board/{id}/column/{columnId}', [CardController::class, 'store'])->name("card.store");
+    Route::delete('/board/{id}/column/{columnId}/card/{cardId}', [CardController::class, 'destroy'])->name("card.destroy");
 });
 
 require __DIR__ . '/auth.php';

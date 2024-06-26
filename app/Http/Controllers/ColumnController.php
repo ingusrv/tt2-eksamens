@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Board;
+use App\Models\Column;
 use Illuminate\Http\Request;
 
 class ColumnController extends Controller
@@ -22,5 +23,30 @@ class ColumnController extends Controller
         ]);
 
         return redirect()->route("board.show", $BoardId);
+    }
+
+    public function destroy(int $boardId, int $columnId, Request $request)
+    {
+        $user = $request->user();
+        $board = Board::find($boardId);
+
+        if (!$board) {
+            return redirect()->route("dashboard");
+        }
+
+        if ($board->user_id !== $user->id) {
+            // TODO: if board is not owned by user AND isnt shared with edit permissions
+            return redirect()->route("dashboard");
+        }
+
+        $column = Column::find($columnId);
+
+        if (!$column) {
+            return redirect()->route("board.show", $boardId);
+        }
+
+        $column->delete();
+
+        return redirect()->route("board.show", $boardId);
     }
 }

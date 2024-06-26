@@ -18,6 +18,15 @@
                 <div class="text-lg font-bold dark:text-gray-100 mb-2">{{$column->name}}</div>
                 <div class="dark:text-gray-100">order: {{$column->order}}</div>
 
+                <form method="POST" action="{{route("column.destroy", [$board->id, $column->id])}}">
+                    @csrf
+                    @method("DELETE")
+
+                    <div class="flex flex-col gap-y-1">
+                        <button type="submit" class="dark:bg-gray-300 dark:text-black px-2 py-1 w-full">Dzēst</button>
+                    </div>
+                </form>
+
                 <form method="POST" action="{{route("card.store", [$board->id, $column->id])}}">
                     @csrf
                     @method("POST")
@@ -36,6 +45,15 @@
                         <div class="dark:bg-gray-800">
                             <p class="dark:text-gray-100">{{$card->text}}</p>
                             <div class="dark:text-gray-100">order: {{$card->order}}</div>
+
+                            <form method="POST" action="{{route("card.destroy", [$board->id, $column->id, $card->id])}}">
+                                @csrf
+                                @method("DELETE")
+
+                                <div class="flex flex-col gap-y-1">
+                                    <button type="submit" class="dark:bg-gray-300 dark:text-black px-2 py-1 w-full">Dzēst</button>
+                                </div>
+                            </form>
                         </div>
                     @endforeach
                 </div>
