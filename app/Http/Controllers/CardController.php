@@ -105,6 +105,64 @@ class CardController extends Controller
         return redirect()->route("board.show", $boardId);
     }
 
+    public function move(int $boardId, int $columnId, int $cardId, Request $request)
+    {
+        $targetColumnId = $request->targetColumn;
+        if ($targetColumnId == null) {
+            return redirect()->route("board.show", $boardId);
+        }
+
+        $user = $request->user();
+
+        $board = Board::find($boardId);
+        if (!$board) {
+            return redirect()->route("dashboard");
+        }
+        if ($board->user_id !== $user->id) {
+            $sharedUser = $board->sharedUsers()->find($user->id);
+            if (!$sharedUser) {
+                return redirect()->route("board.show", $boardId);
+            }
+            if ($sharedUser->pivot->permissions === 0) {
+                return redirect()->route("board.show", $boardId);
+            }
+        }
+
+        $column = Column::find($columnId);
+        if (!$column) {
+            return redirect()->route("board.show", $boardId);
+        }
+        if ($column->board_id !== $board->id) {
+            return redirect()->route("dashboard");
+        }
+
+        $card = Card::find($cardId);
+        if (!$card) {
+            return redirect()->route("board.show", $boardId);
+        }
+        if ($card->column_id !== $column->id) {
+            return redirect()->route("dashboard");
+        }
+
+        // lai kolonna uz kuru pārvietos kartiņu arī pieder tam pašam dēlim
+        $targetColumn = Column::find($targetColumnId);
+        if (!$targetColumn) {
+            return redirect()->route("board.show", $boardId);
+        }
+        if ($targetColumn->board_id !== $board->id) {
+            return redirect()->route("dashboard");
+        }
+
+        $lastCard = $targetColumn->cards()->orderBy("order", "asc")->get()->last();
+        $order = $lastCard ? $lastCard->order + 1 : 0;
+        $card->column_id = $targetColumn->id;
+        $card->order = $order;
+
+        $card->save();
+
+        return redirect()->route("board.show", $boardId);
+    }
+
     public function destroy(int $boardId, int $columnId, int $cardId, Request $request)
     {
         $user = $request->user();

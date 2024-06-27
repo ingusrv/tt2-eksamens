@@ -77,7 +77,7 @@
 
 
                 @if ($canEdit)
-                    <form class="mb-4" method="POST" :class="{'hidden': !addCardOpen}" action="{{route("card.store", [$board->id, $column->id])}}">
+                    <form class="mb-4" method="POST" class="hidden" :class="{'hidden': !addCardOpen}" action="{{route("card.store", [$board->id, $column->id])}}">
                         @csrf
                         @method("POST")
 
@@ -100,53 +100,72 @@
                             $prevCard = $j === 0 ? null : $cards[$j-1]->id;
                             $nextCard = $j === $cardCount - 1 ? null : $cards[$j+1]->id;
                         @endphp
-                        <div class="p-1 flex flex-row dark:bg-neutral-700 rounded-lg">
-                            <p class="dark:text-neutral-100">{{$card->text}}</p>
-                            <!--
-                            <div class="dark:text-gray-100">order: {{$card->order}}</div>
-                            <div class="dark:text-gray-100">previous: {{$prevCard}}</div>
-                            <div class="dark:text-gray-100">next: {{$nextCard}}</div>
-                            -->
+                        <div class="p-1 dark:bg-neutral-700 rounded-lg" x-data="{ moveCardOpen: false }">
+                            <div class="flex flex-row">
+                                <p class="dark:text-neutral-100">{{$card->text}}</p>
+                                <!--
+                                <div class="dark:text-gray-100">order: {{$card->order}}</div>
+                                <div class="dark:text-gray-100">previous: {{$prevCard}}</div>
+                                <div class="dark:text-gray-100">next: {{$nextCard}}</div>
+                                -->
 
-                            @if ($canEdit)
-                                <div class="grow-0 dropdown ml-auto relative" x-data="{ open: false }">
-                                    <button class="block h-full my-auto" @click="open = !open">
-                                        <svg class="text-white cursor-pointer"  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-dots-vertical"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
-                                    </button>
-                                    <div class="dropdown-menu bg-white dark:bg-neutral-800 border border-neutral-600 py-1 z-10 shadow rounded-lg absolute" :class="{'invisible': !open}">
-                                        <div class="top-0 flex flex-col right-0 mt-2 w-28 text-neutral-100 origin-top-right bg-transparent focus:outline-none">
-                                            @if ($prevCard != null)
-                                                <form method="POST" action="{{route("card.swap", [$board->id, $column->id, $card->id, $prevCard])}}">
+                                @if ($canEdit)
+                                    <div class="grow-0 dropdown ml-auto relative" x-data="{ open: false }">
+                                        <button class="block h-full my-auto" @click="open = !open">
+                                            <svg class="text-white cursor-pointer"  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-dots-vertical"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+                                        </button>
+                                        <div class="dropdown-menu bg-white dark:bg-neutral-800 border border-neutral-600 py-1 z-10 shadow rounded-lg absolute" class="invisible" :class="{'invisible': !open}">
+                                            <div class="top-0 flex flex-col right-0 mt-2 w-28 text-neutral-100 origin-top-right bg-transparent focus:outline-none">
+                                                @if ($prevCard != null)
+                                                    <form method="POST" action="{{route("card.swap", [$board->id, $column->id, $card->id, $prevCard])}}">
+                                                        @csrf
+                                                        @method("PATCH")
+
+                                                        <div class="flex flex-col gap-y-1">
+                                                            <button @click="open = false" type="submit" class="w-full px-4 py-2 text-sm bg-transparent hover:bg-neutral-100 hover:text-neutral-900 border-0">{{__("Move up")}}</button>
+                                                        </div>
+                                                    </form>
+                                                @endif
+                                                @if ($nextCard != null)
+                                                    <form method="POST" action="{{route("card.swap", [$board->id, $column->id, $card->id, $nextCard])}}">
+                                                        @csrf
+                                                        @method("PATCH")
+
+                                                        <div class="flex flex-col gap-y-1">
+                                                            <button @click="open = false" type="submit" class="w-full px-4 py-2 text-sm bg-transparent hover:bg-neutral-100 hover:text-neutral-900 border-0">{{__("Move down")}}</button>
+                                                        </div>
+                                                    </form>
+                                                @endif
+                                                <button @click="open = false; moveCardOpen = !moveCardOpen" class="w-full px-4 py-2 text-sm bg-transparent hover:bg-neutral-100 hover:text-neutral-900 border-0">{{__("Column")}}</button>
+                                                <form method="POST" action="{{route("card.destroy", [$board->id, $column->id, $card->id])}}">
                                                     @csrf
-                                                    @method("PATCH")
+                                                    @method("DELETE")
 
                                                     <div class="flex flex-col gap-y-1">
-                                                        <button @click="open = false" type="submit" class="w-full px-4 py-2 text-sm bg-transparent hover:bg-neutral-100 hover:text-neutral-900 border-0">{{__("Move up")}}</button>
+                                                        <button @click="open = false" type="submit" class="w-full px-4 py-2 text-sm bg-transparent hover:bg-neutral-100 hover:text-neutral-900 border-0">{{__("Delete")}}</button>
                                                     </div>
                                                 </form>
-                                            @endif
-                                            @if ($nextCard != null)
-                                                <form method="POST" action="{{route("card.swap", [$board->id, $column->id, $card->id, $nextCard])}}">
-                                                    @csrf
-                                                    @method("PATCH")
-
-                                                    <div class="flex flex-col gap-y-1">
-                                                        <button @click="open = false" type="submit" class="w-full px-4 py-2 text-sm bg-transparent hover:bg-neutral-100 hover:text-neutral-900 border-0">{{__("Move down")}}</button>
-                                                    </div>
-                                                </form>
-                                            @endif
-                                            <form method="POST" action="{{route("card.destroy", [$board->id, $column->id, $card->id])}}">
-                                                @csrf
-                                                @method("DELETE")
-
-                                                <div class="flex flex-col gap-y-1">
-                                                    <button @click="open = false" type="submit" class="w-full px-4 py-2 text-sm bg-transparent hover:bg-neutral-100 hover:text-neutral-900 border-0">{{__("Delete")}}</button>
-                                                </div>
-                                            </form>
+                                            </div>
                                         </div>
                                     </div>
+                                @endif
+                            </div>
+                            <form method="POST" action="{{ route('card.move', [$board->id, $column->id, $card->id]) }}" class="hidden" class="hidden" :class="{'hidden': !moveCardOpen}">
+                                @csrf
+                                @method('PATCH')
+
+                                <div class="flex flex-col gap-y-1">
+                                    <x-select-input id="targetColumn" name="targetColumn" class="mt-1 block w-full" required>
+                                        @foreach ($columns as $targetColumn)
+                                            <option value="{{$targetColumn->id}}">
+                                                {{$targetColumn->name}}
+                                            </option>
+                                        @endforeach
+                                    </x-select-input>
+
+                                    <x-primary-button type="submit" class="w-full">{{__("Move")}}</x-primary-button>
                                 </div>
-                            @endif
+                            </form>
                         </div>
                     @endfor
                 </div>

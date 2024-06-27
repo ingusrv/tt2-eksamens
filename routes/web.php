@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/board/{id}/column/{columnId}', [CardController::class, 'store'])->name("card.store");
     Route::delete('/board/{id}/column/{columnId}/card/{cardId}', [CardController::class, 'destroy'])->name("card.destroy");
     Route::patch('/board/{id}/column/{columnId}/card/{cardId}/swap/{targetCardId}', [CardController::class, 'swap'])->name("card.swap");
+    Route::patch('/board/{id}/column/{columnId}/card/{cardId}/move', [CardController::class, 'move'])->name("card.move");
 });
 
 require __DIR__ . '/auth.php';
