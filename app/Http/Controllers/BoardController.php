@@ -78,9 +78,9 @@ class BoardController extends Controller
 
         $users = User::all();
         $privacyOptions = [
-            ["value" => 0, "name" => "Private"],
-            ["value" => 1, "name" => "Unlisted"],
-            ["value" => 2, "name" => "Public"],
+            ["value" => 0, "name" => __("Private")],
+            ["value" => 1, "name" => __("Unlisted")],
+            ["value" => 2, "name" => __("Public")],
         ];
         $sharedUsers = $board->sharedUsers()->get();
 

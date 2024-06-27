@@ -6,17 +6,18 @@ use App\Http\Controllers\CardController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\LocalizationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicBoardController;
 use App\Http\Controllers\SharedBoardController;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
-
-//App::setLocale("lv");
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name("index");
 
 Route::get("/locale/{locale}", [LocalizationController::class, "set"])->name("locale.set");
+
+Route::get("/public/board/{id}", [PublicBoardController::class, "show"])->name("publicBoard.show");
+
 Route::get('/dashboard', [BoardController::class, "index"])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

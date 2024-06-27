@@ -75,5 +75,12 @@
     "Update Password": "Atjaunināt paroli",
     "Ensure your account is using a long, random password to stay secure.": "Pārliecinieties, ka jūsu profilam tiek izmantota gara, nejauši izveidota parole, lai nodrošinātu drošību.",
     "Current Password": "Esošā parole",
-    "New Password": "Jaunā parole"
+    "New Password": "Jaunā parole",
+    "English": "Angļu",
+    "Latvian": "Latviešu",
+    "Guest": "Viesis",
+    "Main page": "Galvenā lapa",
+    "Private": "Privāts",
+    "Unlisted": "Nerindots",
+    "Public": "Publisks"
 }
