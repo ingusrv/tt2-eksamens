@@ -14,14 +14,20 @@ class BoardController extends Controller
         $boards = $user->boards()->get();
         $sharedBoards = $user->sharedBoards()->get();
 
+        $panelOrder = ["myboards", "sharedboards", "allboards", "allusers"];
+        // ja ir lietotāja definēts order
+        if ($user->panel_order) {
+            $panelOrder = explode(",", $user->panel_order);
+        }
+
         if ($user->role === 1) {
             $allBoards = Board::all();
             $allUsers = User::all();
 
-            return view("board.index", compact("boards", "user", "sharedBoards", "allBoards", "allUsers"));
+            return view("board.index", compact("boards", "user", "sharedBoards", "allBoards", "allUsers", "panelOrder"));
         }
 
-        return view("board.index", compact("boards", "user", "sharedBoards"));
+        return view("board.index", compact("boards", "user", "sharedBoards", "panelOrder"));
     }
 
     public function show(int $id, Request $request)

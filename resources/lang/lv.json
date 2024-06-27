@@ -82,5 +82,12 @@
     "Main page": "Galvenā lapa",
     "Private": "Privāts",
     "Unlisted": "Nerindots",
-    "Public": "Publisks"
+    "Public": "Publisks",
+    "Unknown panel": "Nezināms panelis",
+    "Panel Order": "Paneļu secība",
+    "Edit the display order of your panels on the dashboard.": "Rediģējiet sākumlapas paneļu attēlošanas secību.",
+    "First panel": "Pirmais panelis",
+    "Second panel": "Otrais panelis",
+    "Third panel": "Trešais panelis",
+    "Fourth panel": "Ceturtais panelis"
 }

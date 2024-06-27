@@ -16,9 +16,24 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = $request->user();
+        $panelOptions = [
+            ["value" => "myboards", "name" => __("My boards")],
+            ["value" => "sharedboards", "name" => __("Boards shared with me")],
+        ];
+
+        if ($user->role === 1) {
+            $panelOptions[] = ["value" => "allboards", "name" => __("All boards")];
+            $panelOptions[] = ["value" => "allusers", "name" => __("All users")];
+        }
+
+        $panelOrder = ["myboards", "sharedboards", "allboards", "allusers"];
+        // ja ir lietotāja definēts order
+        if ($user->panel_order) {
+            $panelOrder = explode(",", $user->panel_order);
+        }
+
+        return view('profile.edit', compact("user", "panelOrder", "panelOptions"));
     }
 
     /**
@@ -35,6 +50,29 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    public function panelOrder(Request $request)
+    {
+        if ($request->firstPanel == null || $request->secondPanel == null) {
+            return redirect()->route("profile.edit");
+        }
+
+        $user = $request->user();
+
+        if ($user->role === 1) {
+            if ($request->thirdPanel == null || $request->fourthPanel == null) {
+                return redirect()->route("profile.edit");
+            } else {
+                $user->panel_order = $request->firstPanel . "," . $request->secondPanel . "," . $request->thirdPanel . "," . $request->fourthPanel;
+            }
+        } else {
+            $user->panel_order = $request->firstPanel . "," . $request->secondPanel;
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'panel-order-updated');
     }
 
     /**
