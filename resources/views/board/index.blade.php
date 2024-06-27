@@ -93,5 +93,5 @@
             </div>
         </div>
     @endif
-<div>
+</div>
 </x-app-layout>

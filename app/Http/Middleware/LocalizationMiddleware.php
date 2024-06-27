@@ -16,8 +16,18 @@ class LocalizationMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $locale = $request->session()->get("locale") ?? "en";
-        App::setLocale($locale);
+        $request->header("Accept-Language");
+        $locale = $request->session()->get("locale");
+
+        if ($locale) {
+            App::setLocale($locale);
+        } else {
+            $acceptLanguage = $request->header("Accept-Language");
+            $firstLang = explode(";", $acceptLanguage)[0];
+            $lang = explode(",", $firstLang)[1];
+
+            App::setLocale($lang);
+        }
 
         return $next($request);
     }
