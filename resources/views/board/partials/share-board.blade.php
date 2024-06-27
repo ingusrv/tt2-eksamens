@@ -30,10 +30,10 @@
             <x-input-label for="permissions" :value="__('Permissions')" />
             <x-select-input id="permissions" name="permissions" class="mt-1 block w-full" required>
                 <option value="0">
-                    Drīkst skatīt
+                    {{__("Can view")}}
                 </option>
                 <option value="1">
-                    Drīkst rediģēt
+                    {{__("Can edit")}}
                 </option>
             </x-select-input>
 
@@ -55,31 +55,35 @@
         </div>
     </form>
 
-    <table class="mt-6 w-full">
-        <thead class="text-left">
-            <th>{{  __("Username") }}</th>
-            <th>{{  __("Email") }}</th>
-            <th>{{  __("Permissions") }}</th>
-            <th>{{  __("Actions") }}</th>
-        </thead>
-        <tbody>
-        @foreach($sharedUsers as $sharedUser)
-            <tr>
-                <td>{{$sharedUser->name}}</td>
-                <td>{{$sharedUser->email}}</td>
-                <td>{{$sharedUser->pivot->permissions === 0 ? "Drīkst skatīt" : "Drīkst rediģēt"}}</td>
-                <td>
-                    <form method="POST" action="{{route("sharedboard.destroy", [$board->id, $sharedUser->id])}}">
-                        @csrf
-                        @method("DELETE")
+    @if (count($sharedUsers)>0)
+        <div class="overflow-x-scroll">
+            <table class="mt-6 w-full">
+                <thead class="text-left">
+                    <th class="p-2">{{  __("Username") }}</th>
+                    <th class="p-2">{{  __("Email") }}</th>
+                    <th class="p-2">{{  __("Permissions") }}</th>
+                    <th class="p-2">{{  __("Actions") }}</th>
+                </thead>
+                <tbody>
+                @foreach($sharedUsers as $sharedUser)
+                    <tr>
+                        <td class="p-2">{{$sharedUser->name}}</td>
+                        <td class="p-2">{{$sharedUser->email}}</td>
+                        <td class="p-2">{{$sharedUser->pivot->permissions === 0 ? __("Can view") : __("Can edit")}}</td>
+                        <td class="p-2">
+                            <form method="POST" action="{{route("sharedboard.destroy", [$board->id, $sharedUser->id])}}">
+                                @csrf
+                                @method("DELETE")
 
-                        <div class="flex flex-col gap-y-1">
-                            <button type="submit" class="dark:bg-gray-300 dark:text-black px-2 py-1 w-full">{{__("Remove")}}</button>
-                        </div>
-                    </form>
-                </td>
-            </tr>
-        @endforeach
-        </tbody>
-    </table>
+                                <div class="flex flex-col gap-y-1">
+                                    <x-danger-button type="submit">{{__("Remove")}}</x-danger-button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
 </section>
