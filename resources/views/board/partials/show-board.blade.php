@@ -72,20 +72,12 @@
                     @endif
                 </div>
 
-                <!--
-                <div class="dark:text-gray-100">order: {{$column->order}}</div>
-                <div class="dark:text-gray-100">previous: {{$prevColumn}}</div>
-                <div class="dark:text-gray-100">next: {{$nextColumn}}</div>
-                -->
-
-
                 @if ($canEdit)
                     <form class="mb-4" method="POST" class="hidden" :class="{'hidden': !addCardOpen}" action="{{route("card.store", [$board->id, $column->id])}}">
                         @csrf
                         @method("POST")
 
                         <div class="flex flex-col gap-y-1">
-                            <!--<label for="text" class="dark:text-gray-100">Teksts:</label>-->
                             <x-text-input type="text" id="text" name="text" placeholder="{{__('Text')}}" required />
                             <x-primary-button type="submit" class="w-full">{{__("Add")}}</x-primary-button>
                         </div>
@@ -106,11 +98,6 @@
                         <div class="p-1 dark:bg-neutral-700 rounded-lg" x-data="{ moveCardOpen: false }">
                             <div class="flex flex-row">
                                 <p class="dark:text-neutral-100">{{$card->text}}</p>
-                                <!--
-                                <div class="dark:text-gray-100">order: {{$card->order}}</div>
-                                <div class="dark:text-gray-100">previous: {{$prevCard}}</div>
-                                <div class="dark:text-gray-100">next: {{$nextCard}}</div>
-                                -->
 
                                 @if ($canEdit)
                                     <div class="grow-0 dropdown ml-auto relative" x-data="{ open: false }">
