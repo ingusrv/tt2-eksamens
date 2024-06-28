@@ -39,6 +39,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/board/{id}/share', [SharedBoardController::class, 'store'])->name("sharedboard.store");
     Route::delete('/board/{id}/share/{userId}', [SharedBoardController::class, 'destroy'])->name("sharedboard.destroy");
 
+    Route::post('/board/import', [BoardController::class, 'import'])->name("board.import");
+
     Route::post('/board/{id}/column', [ColumnController::class, 'store'])->name("column.store");
     Route::delete('/board/{id}/column/{columnId}', [ColumnController::class, 'destroy'])->name("column.destroy");
     Route::patch('/board/{id}/column/{columnId}/swap/{targetColumnId}', [ColumnController::class, 'swap'])->name("column.swap");

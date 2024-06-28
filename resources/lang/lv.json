@@ -89,5 +89,20 @@
     "First panel": "Pirmais panelis",
     "Second panel": "Otrais panelis",
     "Third panel": "Trešais panelis",
-    "Fourth panel": "Ceturtais panelis"
+    "Fourth panel": "Ceturtais panelis",
+    "Import board": "Importēt dēli",
+    "Import a board from a json file.": "Importēt dēli no json faila.",
+    "File": "Fails",
+    "Import": "Importēt",
+    "Imported.": "Importēts.",
+    "Import failed:": "Importēšana neizdevās: ",
+    "No file": "Nav faila",
+    "File is empty": "Fails ir tukšs",
+    "Board name is invalid": "Nederīgs dēļa nosaukums",
+    "Board privacy is invalid": "Nederīgs dēļa privātums",
+    "Import stopped at error: ": "Importēšana apstājās pie kļūdas: ",
+    "Column name is invalid": "Nederīgs kolonnas nosaukums",
+    "Column order is invalid": "Nederīga kolonnas secība",
+    "Card text is invalid": "Nederīgs kartiņas teksts",
+    "Card order is invalid": "Nederīga kartiņas secība"
 }

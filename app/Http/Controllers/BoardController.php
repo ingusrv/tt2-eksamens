@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Board;
+use App\Models\Column;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class BoardController extends Controller
 {
@@ -68,6 +70,63 @@ class BoardController extends Controller
         ]);
 
         return redirect()->route("dashboard");
+    }
+
+    public function import(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$request->hasFile("board")) {
+            throw ValidationException::withMessages(["board" => __("Import failed: ") . __("No file")]);
+        }
+
+        $contents = $request->file("board")->get();
+        if (!$contents) {
+            throw ValidationException::withMessages(["board" => __("Import failed: ") . __("File is empty")]);
+        }
+
+        $json = json_decode($contents);
+
+        if (!isset($json->name)) {
+            throw ValidationException::withMessages(["board" => __("Import failed: ") . __("Board name is invalid")]);
+        }
+        if (!isset($json->privacy)) {
+            throw ValidationException::withMessages(["board" => __("Import failed: ") . __("Board privacy is invalid")]);
+        }
+
+        $board = new Board();
+        $board->user_id = $user->id;
+        $board->name = $json->name;
+        $board->privacy = $json->privacy;
+        $board->save();
+
+        foreach ($json->columns as $col) {
+            if (!isset($col->name)) {
+                throw ValidationException::withMessages(["board" => __("Import stopped at error: ") . __("Column name is invalid")]);
+            }
+            if (!isset($col->order)) {
+                throw ValidationException::withMessages(["board" => __("Import stopped at error: ") . __("Column order is invalid")]);
+            }
+
+            $column = new Column();
+            $column->name = $col->name;
+            $column->board_id = $board->id;
+            $column->order = $col->order;
+            $column->save();
+
+            foreach ($col->cards as $card) {
+                if (!isset($card->text)) {
+                    throw ValidationException::withMessages(["board" => __("Import stopped at error: ") . __("Card text is invalid")]);
+                }
+                if (!isset($card->order)) {
+                    throw ValidationException::withMessages(["board" => __("Import stopped at error: ") . __("Card order is invalid")]);
+                }
+
+                $column->cards()->create(["text" => $card->text, "order" => $card->order]);
+            }
+        }
+
+        return redirect()->route("profile.edit")->with("status", "board-imported");
     }
 
     public function edit(int $id, Request $request)
