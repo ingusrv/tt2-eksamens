@@ -102,6 +102,8 @@
                     </div>
                 @endif
                 @break
+            @case ("none")
+                @break
             @default
                 <!-- Ja nesakrīt ar kādu atslēgu tad nav labi -->
                 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

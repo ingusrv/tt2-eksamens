@@ -18,6 +18,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         $panelOptions = [
+            ["value" => "none", "name" => __("None")],
             ["value" => "myboards", "name" => __("My boards")],
             ["value" => "sharedboards", "name" => __("Boards shared with me")],
         ];
